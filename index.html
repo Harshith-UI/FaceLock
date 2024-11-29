@@ -1,38 +1,43 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Chat</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="app">
-        <div id="usernamePrompt" class="modal">
-            <h2>Enter Your Username</h2>
-            <input type="text" id="usernameInput" placeholder="Enter username">
-            <button id="usernameSubmit">Submit</button>
-        </div>
+  <div id="chat-app">
+    <h1>Real-Time Chat</h1>
 
-        <div id="roomSelection" class="hidden">
-            <h1>Welcome to Chat App</h1>
-            <p id="welcomeMessage"></p>
-            <button id="createRoom">Create Room</button>
-            <button id="joinRoom">Join Room</button>
-        </div>
-
-        <div id="chatRoom" class="hidden">
-            <h2>Room ID: <span id="roomIdDisplay"></span></h2>
-            <div id="chatBox"></div>
-            <input type="text" id="chatInput" placeholder="Type a message">
-            <button id="sendMessage">Send</button>
-            <div id="participants">
-                <h3>Participants</h3>
-                <ul id="participantList"></ul>
-            </div>
-        </div>
+    <!-- Username Section -->
+    <div id="username-prompt">
+      <input type="text" id="username" placeholder="Enter your username">
+      <button onclick="setUsername()">Submit</button>
     </div>
-    <script src="script.js"></script>
+
+    <!-- Room Options Section -->
+    <div id="room-options" style="display:none;">
+      <button onclick="createRoom()">Create Room</button>
+      <button onclick="showJoinRoom()">Join Room</button>
+    </div>
+
+    <!-- Join Room Section -->
+    <div id="join-room" style="display:none;">
+      <input type="text" id="roomid" placeholder="Enter Room ID">
+      <button onclick="joinRoom()">Join Room</button>
+    </div>
+
+    <!-- Chat Room Section -->
+    <div id="chat-room" style="display:none;">
+      <h2 id="room-title"></h2>
+      <div id="participants"></div>
+      <div id="messages"></div>
+      <input type="text" id="message-input" placeholder="Type your message">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
 </body>
 </html>
+
