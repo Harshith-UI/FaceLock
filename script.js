@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     usernameSubmit.addEventListener("click", () => {
         username = usernameInput.value.trim();
         if (username) {
+            console.log(`Username entered: ${username}`);
             usernamePrompt.classList.add("hidden");
             roomSelection.classList.remove("hidden");
             welcomeMessage.textContent = `Hello, ${username}!`;
@@ -30,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     createRoom.addEventListener("click", () => {
         roomId = Math.random().toString(36).substring(2, 10); // Generate unique room ID
+        console.log(`Room created with ID: ${roomId}`);
         enterChatRoom(roomId);
     });
 
@@ -37,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const enteredRoomId = prompt("Enter Room ID:");
         if (enteredRoomId) {
             roomId = enteredRoomId.trim();
+            console.log(`Joining room with ID: ${roomId}`);
             enterChatRoom(roomId);
         }
     });
@@ -44,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sendMessage.addEventListener("click", () => {
         const message = chatInput.value.trim();
         if (message && socket) {
+            console.log(`Sending message: ${message}`);
             socket.send(
                 JSON.stringify({
                     type: "message",
@@ -65,24 +69,32 @@ document.addEventListener("DOMContentLoaded", () => {
         initializeWebSocket();
 
         // Notify server about joining
-        socket.send(
-            JSON.stringify({
-                type: "join",
-                room: id,
-                username: username,
-            })
-        );
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(
+                JSON.stringify({
+                    type: "join",
+                    room: id,
+                    username: username,
+                })
+            );
+            console.log(`Sent join request to room ${id} as ${username}`);
+        } else {
+            console.error("WebSocket is not open. Cannot send join message.");
+        }
     }
 
     function initializeWebSocket() {
         // Replace with your WebSocket server URL
-        socket = new WebSocket("wss://fg94j4ye24k.execute-api.us-east-1.amazonaws.com/production/");
+        const wsUrl = "wss://fg94j4ye24k.execute-api.us-east-1.amazonaws.com/production/";
+        console.log(`Connecting to WebSocket server at ${wsUrl}`);
+        socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server.");
         };
 
         socket.onmessage = (event) => {
+            console.log(`Message received from server: ${event.data}`);
             const data = JSON.parse(event.data);
 
             if (data.type === "message" && data.room === roomId) {
@@ -91,10 +103,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 messageElement.textContent = `${data.username}: ${data.text}`;
                 chatBox.appendChild(messageElement);
                 chatBox.scrollTop = chatBox.scrollHeight;
+                console.log(`Message displayed in chat box: ${data.username}: ${data.text}`);
             }
 
             if (data.type === "join" && data.room === roomId) {
                 // Add the new participant to the participant list
+                console.log(`New participant joined: ${data.username}`);
                 updateParticipants(data.username);
             }
         };
@@ -112,6 +126,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const participantElement = document.createElement("li");
         participantElement.textContent = user;
         participantList.appendChild(participantElement);
+        console.log(`Added ${user} to participant list.`);
     }
 });
+
 
