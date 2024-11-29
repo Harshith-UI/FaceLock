@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function initializeWebSocket() {
         // Replace with your WebSocket server URL
-        socket = new WebSocket("wss://your-websocket-server-url");
+        socket = new WebSocket("wss://fg94j4ye24k.execute-api.us-east-1.amazonaws.com/production/");
 
         socket.onopen = () => {
             console.log("Connected to WebSocket server.");
