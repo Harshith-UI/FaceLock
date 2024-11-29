@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Room</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="users-list" class="sidebar"></div>
+    <div id="chat-window">
+      <div id="messages"></div>
+      <textarea id="message-input"></textarea>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    async function checkAuthentication() {
+      try {
+        const session = await Auth.currentSession();
+        console.log('User is authenticated:', session);
+      } catch (error) {
+        console.log('User is not authenticated. Redirecting to Cognito Hosted UI...');
+        redirectToCognito();
+      }
+    }
+
+    function redirectToCognito() {
+      const cognitoDomain = "<Your-Cognito-Domain>";
+      const clientId = "<Your-App-Client-ID>";
+      const redirectUri = "https://your-app-url/chat.html";
+      const hostedUIUrl = `https://${cognitoDomain}/oauth2/authorize?client_id=${clientId}&response_type=code&scope=email+openid+profile&redirect_uri=${redirectUri}`;
+      window.location.href = hostedUIUrl;
+    }
+
+    function sendMessage() {
+      const message = document.getElementById('message-input').value;
+      if (message.trim()) {
+        const messagesDiv = document.getElementById('messages');
+        const newMessage = document.createElement('div');
+        newMessage.textContent = message;
+        newMessage.className = 'message';
+        messagesDiv.appendChild(newMessage);
+        document.getElementById('message-input').value = '';
+      }
+    }
+
+    checkAuthentication();
+  </script>
+</body>
+</html>
