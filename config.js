@@ -9,8 +9,8 @@ Amplify.configure({
         oauth: {
             domain: 'chatapp.auth.us-east-1.amazoncognito.com',
             scope: ['email', 'openid', 'profile'],
-            redirectSignIn: 'https://main.d1uarapbmol90y.amplifyapp.com',
-            redirectSignOut: 'https://main.d1uarapbmol90y.amplifyapp.com',
+            redirectSignIn: 'https://main.d1uarapbmol90y.amplifyapp.com/home.html',
+            redirectSignOut: 'https://main.d1uarapbmol90y.amplifyapp.com/index.html',
             responseType: 'code'
         }
     }
