@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
     joinRoom.addEventListener("click", () => {
         const enteredRoomId = prompt("Enter Room ID:");
         if (enteredRoomId) {
-            roomId = enteredRoomId;
+            roomId = enteredRoomId.trim();
             enterChatRoom(roomId);
         }
     });
@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sendMessage.addEventListener("click", () => {
         const message = chatInput.value.trim();
         if (message && socket) {
-            // Send message to WebSocket server
             socket.send(
                 JSON.stringify({
                     type: "message",
@@ -59,18 +58,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     function enterChatRoom(id) {
-        roomIdDisplay.textContent = id;
+        roomIdDisplay.textContent = `Room ID: ${id}`;
         roomSelection.classList.add("hidden");
         chatRoom.classList.remove("hidden");
 
-        // Initialize WebSocket connection
         initializeWebSocket();
 
-        // Notify server about new participant
+        // Notify server about joining
         socket.send(
             JSON.stringify({
                 type: "join",
-                room: roomId,
+                room: id,
                 username: username,
             })
         );
@@ -81,14 +79,14 @@ document.addEventListener("DOMContentLoaded", () => {
         socket = new WebSocket("wss://your-websocket-server-url");
 
         socket.onopen = () => {
-            console.log("WebSocket connection established.");
+            console.log("Connected to WebSocket server.");
         };
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
 
             if (data.type === "message" && data.room === roomId) {
-                // Display received message in chat box
+                // Append the message to the chat box
                 const messageElement = document.createElement("div");
                 messageElement.textContent = `${data.username}: ${data.text}`;
                 chatBox.appendChild(messageElement);
@@ -96,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (data.type === "join" && data.room === roomId) {
-                // Add new participant to the participant list
+                // Add the new participant to the participant list
                 updateParticipants(data.username);
             }
         };
