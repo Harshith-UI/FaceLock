@@ -1,137 +1,142 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const usernamePrompt = document.getElementById("usernamePrompt");
-    const usernameInput = document.getElementById("usernameInput");
-    const usernameSubmit = document.getElementById("usernameSubmit");
-    const roomSelection = document.getElementById("roomSelection");
-    const welcomeMessage = document.getElementById("welcomeMessage");
-    const createRoom = document.getElementById("createRoom");
-    const joinRoom = document.getElementById("joinRoom");
-    const chatRoom = document.getElementById("chatRoom");
-    const roomIdDisplay = document.getElementById("roomIdDisplay");
-    const chatBox = document.getElementById("chatBox");
-    const chatInput = document.getElementById("chatInput");
-    const sendMessage = document.getElementById("sendMessage");
-    const participantList = document.getElementById("participantList");
+const apiUrl = "https://6wvb2obx25eqrinh3ycerjqdf4.appsync-api.us-east-1.amazonaws.com/graphql"; // Replace with your AppSync GraphQL API URL
+const apiKey = "da2-6nna6dm2fzbo3eqsvvaup6q5nm"; // Replace with your AppSync API Key
 
-    let username = "";
-    let roomId = "";
-    let socket = null;
+let username = "";
+let roomId = "";
 
-    // Handle username submission
-    usernameSubmit.addEventListener("click", () => {
-        username = usernameInput.value.trim();
-        if (username) {
-            console.log(`Username entered: ${username}`);
-            usernamePrompt.classList.add("hidden");
-            roomSelection.classList.remove("hidden");
-            welcomeMessage.textContent = `Hello, ${username}!`;
-        } else {
-            alert("Please enter a username.");
-        }
-    });
+// Step 1: Set username
+function setUsername() {
+  username = document.getElementById("username").value.trim();
+  if (!username) {
+    alert("Please enter a valid username!");
+    return;
+  }
+  document.getElementById("username-prompt").style.display = "none";
+  document.getElementById("room-options").style.display = "block";
+}
 
-    // Handle room creation
-    createRoom.addEventListener("click", () => {
-        roomId = Math.random().toString(36).substring(2, 10); // Generate unique room ID
-        console.log(`Room created with ID: ${roomId}`);
-        enterChatRoom(roomId);
-    });
+// Step 2: Create a new room
+function createRoom() {
+  roomId = generateRoomId();
+  openRoom(roomId);
+}
 
-    // Handle room joining
-    joinRoom.addEventListener("click", () => {
-        const enteredRoomId = prompt("Enter Room ID:");
-        if (enteredRoomId) {
-            roomId = enteredRoomId.trim();
-            console.log(`Joining room with ID: ${roomId}`);
-            enterChatRoom(roomId);
-        }
-    });
+// Step 3: Show join room input
+function showJoinRoom() {
+  document.getElementById("room-options").style.display = "none";
+  document.getElementById("join-room").style.display = "block";
+}
 
-    // Send a chat message
-    sendMessage.addEventListener("click", () => {
-        const message = chatInput.value.trim();
-        if (message && socket && socket.readyState === WebSocket.OPEN) {
-            console.log(`Sending message: ${message}`);
-            socket.send(
-                JSON.stringify({
-                    type: "message",
-                    room: roomId,
-                    username: username,
-                    text: message,
-                })
-            );
-            chatInput.value = "";
-        } else if (!socket || socket.readyState !== WebSocket.OPEN) {
-            console.error("WebSocket is not open. Cannot send message.");
-        }
-    });
+// Step 4: Join an existing room
+function joinRoom() {
+  roomId = document.getElementById("roomid").value.trim();
+  if (!roomId) {
+    alert("Please enter a valid Room ID!");
+    return;
+  }
+  openRoom(roomId);
+}
 
-    // Enter a chat room
-    function enterChatRoom(id) {
-        roomIdDisplay.textContent = `Room ID: ${id}`;
-        roomSelection.classList.add("hidden");
-        chatRoom.classList.remove("hidden");
+// Step 5: Open the room (create or join)
+function openRoom(roomId) {
+  document.getElementById("room-options").style.display = "none";
+  document.getElementById("join-room").style.display = "none";
+  document.getElementById("chat-room").style.display = "block";
+  document.getElementById("room-title").innerText = `Room ID: ${roomId}`;
+  updateParticipants();
+  fetchMessages();
+  subscribeToMessages();
+}
 
-        initializeWebSocket();
+// Step 6: Generate a unique Room ID
+function generateRoomId() {
+  return Math.random().toString(36).substr(2, 8); // Simple random ID generator
+}
+
+// Step 7: Send a message
+function sendMessage() {
+  const message = document.getElementById("message-input").value.trim();
+  if (!message) return;
+
+  const mutation = `
+    mutation SendMessage {
+      sendMessage(roomId: "${roomId}", username: "${username}", content: "${message}") {
+        id
+        roomId
+        username
+        content
+        timestamp
+      }
     }
+  `;
 
-    // Initialize WebSocket connection
-    function initializeWebSocket() {
-        const wsUrl = "wss://fg94j4ye24k.execute-api.us-east-1.amazonaws.com/production/";
-        console.log(`Connecting to WebSocket server at ${wsUrl}`);
-        socket = new WebSocket(wsUrl);
+  fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey
+    },
+    body: JSON.stringify({ query: mutation })
+  }).then(() => {
+    document.getElementById("message-input").value = "";
+    fetchMessages();
+  });
+}
 
-        // When connection is established
-        socket.onopen = () => {
-            console.log("Connected to WebSocket server.");
-            // Notify the server about joining the room
-            socket.send(
-                JSON.stringify({
-                    type: "join",
-                    room: roomId,
-                    username: username,
-                })
-            );
-            console.log(`Sent join request to room ${roomId} as ${username}`);
-        };
-
-        // Handle incoming messages
-        socket.onmessage = (event) => {
-            console.log(`Message received from server: ${event.data}`);
-            const data = JSON.parse(event.data);
-
-            if (data.type === "message" && data.room === roomId) {
-                const messageElement = document.createElement("div");
-                messageElement.textContent = `${data.username}: ${data.text}`;
-                chatBox.appendChild(messageElement);
-                chatBox.scrollTop = chatBox.scrollHeight;
-                console.log(`Message displayed in chat box: ${data.username}: ${data.text}`);
-            }
-
-            if (data.type === "join" && data.room === roomId) {
-                console.log(`New participant joined: ${data.username}`);
-                updateParticipants(data.username);
-            }
-        };
-
-        // Handle connection closure
-        socket.onclose = (event) => {
-            console.log(`WebSocket connection closed: ${event.reason || "No reason provided."}`);
-        };
-
-        // Handle connection errors
-        socket.onerror = (error) => {
-            console.error("WebSocket error occurred:", error);
-        };
+// Step 8: Fetch messages for the room
+function fetchMessages() {
+  const query = `
+    query GetMessages {
+      getMessages(roomId: "${roomId}") {
+        id
+        username
+        content
+        timestamp
+      }
     }
+  `;
 
-    // Update the participant list
-    function updateParticipants(user) {
-        const participantElement = document.createElement("li");
-        participantElement.textContent = user;
-        participantList.appendChild(participantElement);
-        console.log(`Added ${user} to participant list.`);
+  fetch(apiUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey
+    },
+    body: JSON.stringify({ query: query })
+  })
+    .then(response => response.json())
+    .then(data => {
+      const messages = data.data.getMessages;
+      const messagesDiv = document.getElementById("messages");
+      messagesDiv.innerHTML = messages.map(msg => `<p><strong>${msg.username}:</strong> ${msg.content}</p>`).join("");
+    });
+}
+
+// Step 9: Subscribe to new messages
+function subscribeToMessages() {
+  const subscription = `
+    subscription OnMessageAdded {
+      onMessageAdded(roomId: "${roomId}") {
+        id
+        username
+        content
+        timestamp
+      }
     }
-});
+  `;
 
+  const eventSource = new EventSource(`${apiUrl}?query=${encodeURIComponent(subscription)}`);
+  eventSource.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    const newMessage = data.data.onMessageAdded;
 
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.innerHTML += `<p><strong>${newMessage.username}:</strong> ${newMessage.content}</p>`;
+  };
+}
+
+// Step 10: Update participants in the room
+function updateParticipants() {
+  const participantsDiv = document.getElementById("participants");
+  participantsDiv.innerHTML = `<p><strong>Participants:</strong> ${username}</p>`;
+}
