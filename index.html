@@ -4,37 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Real-Time Chat</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div id="chat-app">
-    <h1>Real-Time Chat</h1>
-
-    <!-- Username Section -->
-    <div id="username-prompt">
-      <input type="text" id="username" placeholder="Enter your username">
-      <button onclick="setUsername()">Submit</button>
+  <div class="container">
+    <div class="chat-header">
+      <h1>Real-Time Chat</h1>
+      <div id="room-info"></div>
     </div>
-
-    <!-- Room Options Section -->
-    <div id="room-options" style="display:none;">
-      <button onclick="createRoom()">Create Room</button>
-      <button onclick="showJoinRoom()">Join Room</button>
+    <div class="chat-container">
+      <div id="participants" class="participants-list"></div>
+      <div id="chat-box" class="chat-box"></div>
     </div>
-
-    <!-- Join Room Section -->
-    <div id="join-room" style="display:none;">
-      <input type="text" id="roomid" placeholder="Enter Room ID">
-      <button onclick="joinRoom()">Join Room</button>
-    </div>
-
-    <!-- Chat Room Section -->
-    <div id="chat-room" style="display:none;">
-      <h2 id="room-title"></h2>
-      <div id="participants"></div>
-      <div id="messages"></div>
+    <div class="chat-input">
       <input type="text" id="message-input" placeholder="Type your message">
-      <button onclick="sendMessage()">Send</button>
+      <button id="send-btn">Send</button>
     </div>
   </div>
   <script src="script.js"></script>
