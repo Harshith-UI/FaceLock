@@ -4,12 +4,11 @@ let currentRoom = null;
 const participants = [];
 
 // MQTT Client Setup
-const iotEndpoint = "a2lm7t4wdaeepe-ats.iot.us-east-1.amazonaws.com";
+const iotEndpoint = process.env.IOT_ENDPOINT;
 const clientId = "chatApp_" + Math.random().toString(36).substring(2);
 
-// Debug: Check if Paho is loaded and endpoint is set
+// Debug: Check if Paho is defined
 console.log("Is Paho defined?", typeof Paho !== "undefined");
-console.log("MQTT Endpoint:", iotEndpoint);
 
 // MQTT Client Initialization
 const mqttClient = new Paho.MQTT.Client(iotEndpoint, 443, clientId);
