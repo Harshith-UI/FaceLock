@@ -1,45 +1,86 @@
-const AWS = window.AWS;
-const mqtt = AWS.MQTT;
-
-const iotEndpoint = "a2lm7t4wdaeepe-ats.iot.us-east-1.amazonaws.com"; // Replace with your AWS IoT endpoint
-const clientId = "chatApp_" + Math.random().toString(36).substring(2); // Random client ID
-
-const topicBase = "chat/"; // Base topic for chat rooms
+// Variables
+let username = null;
 let currentRoom = null;
+const participants = [];
 
-// Initialize MQTT client
-const mqttClient = mqtt.Client({
-  region: "us-east-1", // Replace with your region
-  clientId,
-  endpoint: iotEndpoint,
+// MQTT Client Setup
+const iotEndpoint = "a2lm7t4wdaeepe-ats.iot.us-east-1.amazonaws.com"; // Replace with your IoT endpoint
+const clientId = "chatApp_" + Math.random().toString(36).substring(2);
+
+// MQTT Client Initialization
+const mqttClient = new Paho.MQTT.Client(iotEndpoint, 443, clientId);
+
+// Connect to AWS IoT
+mqttClient.connect({
+  useSSL: true,
+  timeout: 3,
+  onSuccess: () => {
+    console.log("Connected to IoT Core");
+  },
 });
 
-// Connect to AWS IoT Core
-mqttClient.on("connect", () => {
-  console.log("Connected to AWS IoT Core");
-});
+// MQTT Handlers
+mqttClient.onMessageArrived = (message) => {
+  const topic = message.destinationName;
+  const payload = JSON.parse(message.payloadString);
 
-// Event listener for sending messages
-document.getElementById("send-btn").addEventListener("click", () => {
-  const message = document.getElementById("message-input").value;
-  if (currentRoom && message.trim()) {
-    mqttClient.publish(`${topicBase}${currentRoom}`, JSON.stringify({ message }));
-    document.getElementById("message-input").value = ""; // Clear input
+  if (topic.endsWith("/messages")) {
+    const chatBox = document.getElementById("chat-box");
+    const msgElement = document.createElement("div");
+    msgElement.textContent = `${payload.username}: ${payload.message}`;
+    chatBox.appendChild(msgElement);
+  } else if (topic.endsWith("/participants")) {
+    participants.push(payload.username);
+    updateParticipants();
+  }
+};
+
+// Event Listeners
+document.getElementById("enter-btn").addEventListener("click", () => {
+  username = document.getElementById("username-input").value;
+  if (username) {
+    document.getElementById("auth-section").style.display = "none";
+    document.getElementById("room-section").style.display = "block";
   }
 });
 
-// Event listener for incoming messages
-mqttClient.on("message", (topic, payload) => {
-  const messageData = JSON.parse(payload.toString());
-  const chatBox = document.getElementById("chat-box");
-  const messageElement = document.createElement("div");
-  messageElement.textContent = messageData.message;
-  chatBox.appendChild(messageElement);
+document.getElementById("create-room-btn").addEventListener("click", () => {
+  currentRoom = `room_${Math.random().toString(36).substring(7)}`;
+  enterRoom();
 });
 
-// Function to join a chat room
-function joinRoom(roomId) {
-  if (currentRoom) mqttClient.unsubscribe(`${topicBase}${currentRoom}`);
-  currentRoom = roomId;
-  mqttClient.subscribe(`${topicBase}${roomId}`);
+document.getElementById("join-room-btn").addEventListener("click", () => {
+  currentRoom = document.getElementById("room-id-input").value;
+  if (currentRoom) {
+    enterRoom();
+  }
+});
+
+document.getElementById("send-btn").addEventListener("click", () => {
+  const message = document.getElementById("message-input").value;
+  if (message) {
+    const msgPayload = JSON.stringify({ username, message });
+    mqttClient.send(`${currentRoom}/messages`, msgPayload);
+    document.getElementById("message-input").value = "";
+  }
+});
+
+// Helper Functions
+function enterRoom() {
+  mqttClient.subscribe(`${currentRoom}/messages`);
+  mqttClient.subscribe(`${currentRoom}/participants`);
+  mqttClient.send(`${currentRoom}/participants`, JSON.stringify({ username }));
+  document.getElementById("room-section").style.display = "none";
+  document.getElementById("chat-section").style.display = "block";
+  document.getElementById("room-info").textContent = `Room ID: ${currentRoom}`;
+}
+
+function updateParticipants() {
+  const participantsDiv = document.getElementById("participants");
+  participantsDiv.innerHTML = "";
+  participants.forEach((user) => {
+    const userElement = document.createElement("div");
+    userElement.textContent = user;
+    participantsDiv.appendChild(userElement);
+  });
 }
