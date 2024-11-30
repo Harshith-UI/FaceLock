@@ -4,7 +4,7 @@ let currentRoom = null;
 const participants = [];
 
 // MQTT Client Setup
-const iotEndpoint = "a2lm7t4wdaeepe-ats.iot.us-east-1.amazonaws.com"; // Replace with your IoT endpoint
+const iotEndpoint = "wss://a2lm7t4wdaeepe-ats.iot.us-east-1.amazonaws.com/mqtt"; // Replace with your IoT endpoint
 const clientId = "chatApp_" + Math.random().toString(36).substring(2);
 
 // Debug: Check if Paho is loaded
