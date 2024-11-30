@@ -10,18 +10,28 @@
   <div class="container">
     <div class="chat-header">
       <h1>Real-Time Chat</h1>
+    </div>
+    <div id="auth-section">
+      <input type="text" id="username-input" placeholder="Enter your username">
+      <button id="enter-btn">Enter</button>
+    </div>
+    <div id="room-section" style="display: none;">
+      <button id="create-room-btn">Create Room</button>
+      <input type="text" id="room-id-input" placeholder="Enter Room ID">
+      <button id="join-room-btn">Join Room</button>
+    </div>
+    <div id="chat-section" style="display: none;">
       <div id="room-info"></div>
-    </div>
-    <div class="chat-container">
-      <div id="participants" class="participants-list"></div>
-      <div id="chat-box" class="chat-box"></div>
-    </div>
-    <div class="chat-input">
-      <input type="text" id="message-input" placeholder="Type your message">
-      <button id="send-btn">Send</button>
+      <div class="chat-container">
+        <div id="participants" class="participants-list"></div>
+        <div id="chat-box" class="chat-box"></div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Type your message">
+        <button id="send-btn">Send</button>
+      </div>
     </div>
   </div>
   <script src="script.js"></script>
 </body>
 </html>
-
