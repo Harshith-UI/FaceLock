@@ -31,7 +31,6 @@ mqttClient.connect({
 // MQTT Handlers
 mqttClient.onMessageArrived = (message) => {
   console.log("Message arrived:", message);
-
   const topic = message.destinationName;
   const payload = JSON.parse(message.payloadString);
 
@@ -85,11 +84,9 @@ document.getElementById("send-btn").addEventListener("click", () => {
 // Helper Functions
 function enterRoom() {
   console.log("Entering room:", currentRoom);
-
   mqttClient.subscribe(`${currentRoom}/messages`);
   mqttClient.subscribe(`${currentRoom}/participants`);
   mqttClient.send(`${currentRoom}/participants`, JSON.stringify({ username }));
-
   document.getElementById("room-section").style.display = "none";
   document.getElementById("chat-section").style.display = "block";
   document.getElementById("room-info").textContent = `Room ID: ${currentRoom}`;
