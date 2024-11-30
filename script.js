@@ -13,9 +13,6 @@ console.log("Is Paho defined?", typeof Paho !== "undefined");
 // MQTT Client Initialization
 const mqttClient = new Paho.MQTT.Client(iotEndpoint, 443, clientId);
 
-// Debug: Log client initialization
-console.log("MQTT Client Initialized:", mqttClient);
-
 // Connect to AWS IoT
 mqttClient.connect({
   useSSL: true,
@@ -25,6 +22,13 @@ mqttClient.connect({
   },
   onFailure: (error) => {
     console.error("Connection to IoT Core failed:", error);
+    console.error("Error code:", error.errorCode);
+    console.error("Error message:", error.errorMessage);
+    console.error("Invocation context:", error.invocationContext);
+
+    // Display a user-friendly error message
+    const errorMessage = "Failed to connect to the chat server. Please try again later.";
+    alert(errorMessage);
   },
 });
 
