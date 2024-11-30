@@ -1,4 +1,7 @@
-import { API } from 'aws-amplify';
+import Amplify, { API } from 'aws-amplify';
+import awsconfig from './aws-exports';
+
+Amplify.configure(awsconfig);
 
 // Variables
 let username = null;
