@@ -36,13 +36,17 @@ mqttClient.onMessageArrived = (message) => {
 };
 
 // Event Listeners
+// Event Listeners
 document.getElementById("enter-btn").addEventListener("click", () => {
-  username = document.getElementById("username-input").value;
+  username = document.getElementById("username-input").value.trim();
   if (username) {
     document.getElementById("auth-section").style.display = "none";
     document.getElementById("room-section").style.display = "block";
+  } else {
+    alert("Please enter a valid username.");
   }
 });
+
 
 document.getElementById("create-room-btn").addEventListener("click", () => {
   currentRoom = `room_${Math.random().toString(36).substring(7)}`;
