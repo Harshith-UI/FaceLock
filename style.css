@@ -1,60 +1,113 @@
+/* General styles */
 body {
   font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #f4f4f9;
   margin: 0;
   padding: 0;
+  background-color: #f8f9fa;
+  text-align: center;
 }
 
 #app {
-  max-width: 600px;
-  margin: 0 auto;
   padding: 20px;
 }
 
 h1 {
-  font-size: 2rem;
+  font-size: 24px;
   margin-bottom: 10px;
 }
 
 #instructions {
-  font-size: 1rem;
+  font-size: 16px;
   margin-bottom: 20px;
 }
 
+/* Camera container styles */
 #camera-container {
+  margin: 20px auto;
+  max-width: 400px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
   position: relative;
 }
 
-video {
+#camera {
   width: 100%;
-  max-width: 400px;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  height: auto;
+  display: block;
+  background: black;
 }
 
-button {
-  display: inline-block;
-  padding: 10px 20px;
-  font-size: 1rem;
+#snapshot {
+  display: none;
+}
+
+/* Button styles */
+#capture-button {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
   background-color: #007bff;
-  color: #fff;
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-button:hover {
+#capture-button:hover {
   background-color: #0056b3;
 }
 
-#result {
-  font-size: 1.2rem;
-  margin-top: 20px;
+#capture-button:active {
+  background-color: #003d80;
 }
 
-#animation {
+/* Result styles */
+#result {
+  font-size: 18px;
   margin-top: 20px;
-  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Animation styles */
+#animation {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  #app {
+    padding: 10px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  #instructions {
+    font-size: 14px;
+  }
+
+  #camera-container {
+    max-width: 100%;
+    border: none;
+  }
+
+  #capture-button {
+    font-size: 14px;
+    padding: 10px 15px;
+    width: 90%; /* Make the button nearly full-width */
+  }
+
+  #result {
+    font-size: 16px;
+  }
+
+  #animation {
+    font-size: 16px;
+  }
 }
