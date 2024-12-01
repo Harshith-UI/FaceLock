@@ -1,6 +1,6 @@
 const video = document.getElementById("camera");
 const canvas = document.getElementById("snapshot");
-const captureButton = document.getElementById("capture-button");
+const verifyButton = document.getElementById("capture-button"); // Corrected ID
 const resultDiv = document.getElementById("result");
 const animationDiv = document.getElementById("animation");
 
@@ -16,7 +16,7 @@ navigator.mediaDevices
   });
 
 // Capture the image and verify
-captureButton.addEventListener("click", async () => {
+verifyButton.addEventListener("click", async () => {
   resultDiv.textContent = "Verifying...";
   animationDiv.innerHTML = ""; // Clear animations
 
@@ -40,7 +40,7 @@ captureButton.addEventListener("click", async () => {
           bucket: "smart-attendance-upload",
           folder: "uploads",
           filename: "captured_image.jpeg",
-          image: imageData,
+          image: imageData, // Use "image" as expected by the Lambda
         }),
       }
     );
@@ -55,22 +55,29 @@ captureButton.addEventListener("click", async () => {
 
 // Handle the result
 function handleResult(data) {
-  if (data.access === "granted") {
-    resultDiv.textContent = "Access Granted!";
-    resultDiv.style.color = "green";
-    playAnimation("granted"); // Show gate opening animation
-  } else {
-    resultDiv.textContent = "Access Denied!";
-    resultDiv.style.color = "red";
-    playAnimation("denied"); // Show police warning animation
+  try {
+    // Parse the backend response's "body" field
+    const result = JSON.parse(data.body); // Parse the "body" string
+    if (result.access === "granted") {
+      resultDiv.textContent = "Access Granted!";
+      resultDiv.style.color = "green";
+      playAnimation("granted"); // Show gate opening animation
+    } else {
+      resultDiv.textContent = "Access Denied!";
+      resultDiv.style.color = "red";
+      playAnimation("denied"); // Show police warning animation
+    }
+  } catch (error) {
+    console.error("Error parsing backend response:", error);
+    resultDiv.textContent = "Error during verification.";
   }
 }
 
 // Play animations based on result
 function playAnimation(type) {
   if (type === "granted") {
-    animationDiv.textContent = "🚪 Gate Opening... Welcome!";
+    animationDiv.innerHTML = "🚪 Gate Opening... Welcome!";
   } else if (type === "denied") {
-    animationDiv.textContent = "🚔 Police Warning! Access Denied!";
+    animationDiv.innerHTML = "🚔 Police Warning! Access Denied!";
   }
 }
