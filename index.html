@@ -9,12 +9,13 @@
 <body>
   <div id="app">
     <h1>Building Entry Verification</h1>
-    <p id="instructions">Please look at the camera for access verification.</p>
+    <p id="instructions">Please look at the camera and click the button to verify access.</p>
     <div id="camera-container">
       <video id="camera" autoplay></video>
       <canvas id="snapshot" hidden></canvas>
     </div>
-    <div id="result">Verifying...</div>
+    <button id="capture-button">Verify Access</button>
+    <div id="result"></div>
     <div id="animation"></div>
   </div>
   <script src="app.js"></script>
