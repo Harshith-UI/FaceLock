@@ -4,37 +4,37 @@ const captureButton = document.getElementById("capture-button");
 const resultDiv = document.getElementById("result");
 const animationDiv = document.getElementById("animation");
 
-// Initialize camera
+// Start the camera feed
 navigator.mediaDevices
   .getUserMedia({ video: true })
   .then((stream) => {
     video.srcObject = stream;
+    console.log("Camera initialized successfully.");
   })
   .catch((err) => {
     console.error("Camera access denied:", err);
     resultDiv.textContent = "Camera access is required for verification.";
   });
 
-// Capture snapshot and verify access
+// Capture image and upload
 captureButton.addEventListener("click", async () => {
-  resultDiv.innerText = "Verifying...";
+  resultDiv.innerText = "Capturing and verifying...";
   animationDiv.innerHTML = ""; // Clear animations
 
   try {
-    // Ensure canvas dimensions match video feed
+    // Ensure canvas matches video dimensions
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
 
-    // Draw video frame to canvas
+    // Capture the image from the video feed
     const context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert canvas image to base64
+    // Convert the image to base64
     const imageData = canvas.toDataURL("image/jpeg").split(",")[1];
+    console.log("Base64 image captured:", imageData.slice(0, 100)); // Log first 100 characters for debugging
 
-    console.log("Captured Image (Base64):", imageData); // Debug log
-
-    // Call the backend API to upload and verify
+    // Call the API to upload and verify the image
     const response = await fetch(
       "https://mja1tyi5z7.execute-api.us-east-1.amazonaws.com/prod/recognize-face",
       {
@@ -44,7 +44,7 @@ captureButton.addEventListener("click", async () => {
           bucket: "smart-attendance-upload",
           folder: "uploads",
           filename: "captured_image.jpeg",
-          image_b64: imageData, // Include base64 image
+          image_b64: imageData,
         }),
       }
     );
@@ -54,14 +54,15 @@ captureButton.addEventListener("click", async () => {
     }
 
     const data = await response.json();
+    console.log("API Response:", data);
     handleResult(data.access);
   } catch (error) {
-    console.error("Error during verification:", error);
+    console.error("Error during image capture or upload:", error);
     resultDiv.textContent = "Error during verification.";
   }
 });
 
-// Handle the API result
+// Handle API response
 function handleResult(access) {
   if (access === "granted") {
     resultDiv.innerText = "Access Granted!";
@@ -76,7 +77,7 @@ function handleResult(access) {
 
 // Play animations
 function playAnimation(status) {
-  animationDiv.innerHTML = ""; // Clear previous animation
+  animationDiv.innerHTML = ""; // Clear any previous animation
   if (status === "granted") {
     animationDiv.innerHTML = `
       <div class="gate-open">🚪 Gate Opening... Welcome!</div>
