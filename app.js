@@ -1,6 +1,6 @@
 const video = document.getElementById("camera");
 const canvas = document.getElementById("snapshot");
-const verifyButton = document.getElementById("capture-button"); // Corrected ID
+const verifyButton = document.getElementById("capture-button");
 const resultDiv = document.getElementById("result");
 const animationDiv = document.getElementById("animation");
 
@@ -40,7 +40,7 @@ verifyButton.addEventListener("click", async () => {
           bucket: "smart-attendance-upload",
           folder: "uploads",
           filename: "captured_image.jpeg",
-          image: imageData, // Use "image" as expected by the Lambda
+          image: imageData,
         }),
       }
     );
@@ -55,29 +55,37 @@ verifyButton.addEventListener("click", async () => {
 
 // Handle the result
 function handleResult(data) {
-  try {
-    // Parse the backend response's "body" field
-    const result = JSON.parse(data.body); // Parse the "body" string
-    if (result.access === "granted") {
-      resultDiv.textContent = "Access Granted!";
-      resultDiv.style.color = "green";
-      playAnimation("granted"); // Show gate opening animation
-    } else {
-      resultDiv.textContent = "Access Denied!";
-      resultDiv.style.color = "red";
-      playAnimation("denied"); // Show police warning animation
-    }
-  } catch (error) {
-    console.error("Error parsing backend response:", error);
-    resultDiv.textContent = "Error during verification.";
+  if (data.access === "granted") {
+    resultDiv.textContent = "Access Granted!";
+    resultDiv.style.color = "green";
+    playAnimation("granted"); // Show gate opening animation
+  } else {
+    resultDiv.textContent = "Access Denied!";
+    resultDiv.style.color = "red";
+    playAnimation("denied"); // Show police warning animation
   }
 }
 
 // Play animations based on result
 function playAnimation(type) {
   if (type === "granted") {
-    animationDiv.innerHTML = "🚪 Gate Opening... Welcome!";
+    animationDiv.innerHTML = `
+      <div class="gate">
+        <div class="gate-left"></div>
+        <div class="gate-right"></div>
+      </div>
+      <p>🚪 Gate Opening... Welcome!</p>
+    `;
+    document.querySelector(".gate-left").classList.add("open-left");
+    document.querySelector(".gate-right").classList.add("open-right");
   } else if (type === "denied") {
-    animationDiv.innerHTML = "🚔 Police Warning! Access Denied!";
+    animationDiv.innerHTML = `
+      <div class="police">
+        <img src="police-car.gif" alt="Police Car">
+      </div>
+      <p>🚔 Police Warning! Access Denied!</p>
+    `;
+    const siren = new Audio("siren.mp3"); // Add a siren sound
+    siren.play();
   }
 }
