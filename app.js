@@ -2,9 +2,14 @@ const video = document.getElementById("camera");
 const canvas = document.getElementById("snapshot");
 const captureButton = document.getElementById("capture-button");
 const resultDiv = document.getElementById("result");
-const animationDiv = document.getElementById("animation");
+const verificationContainer = document.getElementById("verification-container");
 const gateContainer = document.getElementById("gate-container");
 const policeContainer = document.getElementById("police-container");
+
+// Add event listeners to retry buttons
+document.querySelectorAll('.retry-button').forEach(button => {
+  button.addEventListener('click', resetInterface);
+});
 
 // Start the camera
 navigator.mediaDevices
@@ -58,13 +63,12 @@ captureButton.addEventListener("click", async () => {
 
 // Handle the result
 function handleResult(data) {
+  // Hide the verification interface
+  verificationContainer.classList.add('hidden');
+  
   if (data.access === "granted") {
-    resultDiv.textContent = "Access Granted!";
-    resultDiv.style.color = "green";
     playAnimation("granted");
   } else {
-    resultDiv.textContent = "Access Denied!";
-    resultDiv.style.color = "red";
     playAnimation("denied");
   }
 }
@@ -83,4 +87,18 @@ function playAnimation(type) {
     gateContainer.style.display = "none";
     policeContainer.style.display = "block";
   }
+}
+
+// Reset interface to initial state
+function resetInterface() {
+  // Show verification interface
+  verificationContainer.classList.remove('hidden');
+  
+  // Hide animations
+  gateContainer.style.display = "none";
+  gateContainer.classList.remove("open");
+  policeContainer.style.display = "none";
+  
+  // Clear result
+  resultDiv.textContent = "";
 }
