@@ -1,113 +1,57 @@
-/* General styles */
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
-  text-align: center;
-}
-
-#app {
-  padding: 20px;
-}
-
-h1 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-#instructions {
-  font-size: 16px;
-  margin-bottom: 20px;
-}
-
-/* Camera container styles */
-#camera-container {
+/* Gate animation */
+.gate {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin: 20px auto;
-  max-width: 400px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  overflow: hidden;
+  width: 300px;
+  height: 200px;
   position: relative;
 }
 
-#camera {
-  width: 100%;
-  height: auto;
-  display: block;
-  background: black;
-}
-
-#snapshot {
-  display: none;
-}
-
-/* Button styles */
-#capture-button {
-  display: block;
-  margin: 20px auto;
-  padding: 12px 20px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: #007bff;
-  color: white;
-  border: none;
+.gate-left,
+.gate-right {
+  width: 140px;
+  height: 200px;
+  background: #333;
+  border: 2px solid #444;
   border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-#capture-button:hover {
-  background-color: #0056b3;
+.gate-left.open-left {
+  animation: openLeft 2s forwards;
 }
 
-#capture-button:active {
-  background-color: #003d80;
+.gate-right.open-right {
+  animation: openRight 2s forwards;
 }
 
-/* Result styles */
-#result {
-  font-size: 18px;
-  margin-top: 20px;
-  font-weight: bold;
+@keyframes openLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-150%);
+  }
 }
 
-/* Animation styles */
-#animation {
-  font-size: 18px;
-  margin-top: 10px;
+@keyframes openRight {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(150%);
+  }
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
-  #app {
-    padding: 10px;
-  }
+/* Police animation */
+.police {
+  margin: 20px auto;
+  width: 300px;
+  height: auto;
+}
 
-  h1 {
-    font-size: 20px;
-  }
-
-  #instructions {
-    font-size: 14px;
-  }
-
-  #camera-container {
-    max-width: 100%;
-    border: none;
-  }
-
-  #capture-button {
-    font-size: 14px;
-    padding: 10px 15px;
-    width: 90%; /* Make the button nearly full-width */
-  }
-
-  #result {
-    font-size: 16px;
-  }
-
-  #animation {
-    font-size: 16px;
-  }
+.police img {
+  max-width: 100%;
+  height: auto;
 }
