@@ -2,14 +2,7 @@ const video = document.getElementById("camera");
 const canvas = document.getElementById("snapshot");
 const captureButton = document.getElementById("capture-button");
 const resultDiv = document.getElementById("result");
-const verificationContainer = document.getElementById("verification-container");
-const gateContainer = document.getElementById("gate-container");
-const policeContainer = document.getElementById("police-container");
-
-// Add event listeners to retry buttons
-document.querySelectorAll('.retry-button').forEach(button => {
-  button.addEventListener('click', resetInterface);
-});
+const animationDiv = document.getElementById("animation");
 
 // Start the camera
 navigator.mediaDevices
@@ -25,19 +18,17 @@ navigator.mediaDevices
 // Capture the image and verify
 captureButton.addEventListener("click", async () => {
   resultDiv.textContent = "Verifying...";
-  // Hide both animations initially
-  gateContainer.style.display = "none";
-  policeContainer.style.display = "none";
-  
+  animationDiv.innerHTML = ""; // Clear animations
+
   // Draw the video frame on the canvas
   const context = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
+
   // Convert the canvas image to base64
   const imageData = canvas.toDataURL("image/jpeg").split(",")[1];
-  
+
   // Call the backend API
   try {
     const response = await fetch(
@@ -53,6 +44,7 @@ captureButton.addEventListener("click", async () => {
         }),
       }
     );
+
     const data = await response.json();
     handleResult(data);
   } catch (error) {
@@ -63,42 +55,22 @@ captureButton.addEventListener("click", async () => {
 
 // Handle the result
 function handleResult(data) {
-  // Hide the verification interface
-  verificationContainer.classList.add('hidden');
-  
   if (data.access === "granted") {
-    playAnimation("granted");
+    resultDiv.textContent = "Access Granted!";
+    resultDiv.style.color = "green";
+    playAnimation("granted"); // Show gate opening animation
   } else {
-    playAnimation("denied");
+    resultDiv.textContent = "Access Denied!";
+    resultDiv.style.color = "red";
+    playAnimation("denied"); // Show police warning animation
   }
 }
 
 // Play animations based on result
 function playAnimation(type) {
   if (type === "granted") {
-    // Show gate animation
-    gateContainer.style.display = "block";
-    policeContainer.style.display = "none";
-    setTimeout(() => {
-      gateContainer.classList.add("open");
-    }, 100);
+    animationDiv.textContent = "🚪 Gate Opening... Welcome!";
   } else if (type === "denied") {
-    // Show police animation
-    gateContainer.style.display = "none";
-    policeContainer.style.display = "block";
+    animationDiv.textContent = "🚔 Police Warning! Access Denied!";
   }
-}
-
-// Reset interface to initial state
-function resetInterface() {
-  // Show verification interface
-  verificationContainer.classList.remove('hidden');
-  
-  // Hide animations
-  gateContainer.style.display = "none";
-  gateContainer.classList.remove("open");
-  policeContainer.style.display = "none";
-  
-  // Clear result
-  resultDiv.textContent = "";
 }
