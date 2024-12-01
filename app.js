@@ -78,6 +78,6 @@ function playAnimation(type) {
   if (type === "granted") {
     animationDiv.innerHTML = "🚪 Gate Opening... Welcome!";
   } else if (type === "denied") {
-    animationDiv.innerHTML = "🚔 Police Warning! Access Denied!";
+    animationDiv.innerHTML = "🔒 Unauthorized Attempt Detected! Please try again or contact security!";
   }
 }
