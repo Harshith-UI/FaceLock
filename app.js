@@ -17,15 +17,22 @@ navigator.mediaDevices
 
 // Capture snapshot and verify access
 captureButton.addEventListener("click", async () => {
+  resultDiv.innerText = "Verifying...";
+  animationDiv.innerHTML = ""; // Clear animations
+
   try {
-    // Capture snapshot
-    const context = canvas.getContext("2d");
+    // Ensure canvas dimensions match video feed
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
+
+    // Draw video frame to canvas
+    const context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert snapshot to base64
+    // Convert canvas image to base64
     const imageData = canvas.toDataURL("image/jpeg").split(",")[1];
+
+    console.log("Captured Image (Base64):", imageData); // Debug log
 
     // Call the backend API to upload and verify
     const response = await fetch(
@@ -37,10 +44,14 @@ captureButton.addEventListener("click", async () => {
           bucket: "smart-attendance-upload",
           folder: "uploads",
           filename: "captured_image.jpeg",
-          image_b64: imageData,
+          image_b64: imageData, // Include base64 image
         }),
       }
     );
+
+    if (!response.ok) {
+      throw new Error("API call failed with status: " + response.status);
+    }
 
     const data = await response.json();
     handleResult(data.access);
@@ -50,7 +61,7 @@ captureButton.addEventListener("click", async () => {
   }
 });
 
-// Handle the result
+// Handle the API result
 function handleResult(access) {
   if (access === "granted") {
     resultDiv.innerText = "Access Granted!";
