@@ -3,35 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Real-Time Chat</title>
-  <link rel="stylesheet" href="style.css">
-  <script type="module" src="script.mjs"></script>
+  <title>Building Entry Verification</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="chat-header">
-      <h1>Real-Time Chat</h1>
+  <div id="app">
+    <h1>Building Entry Verification</h1>
+    <p id="instructions">Please look at the camera for access verification.</p>
+    <div id="camera-container">
+      <video id="camera" autoplay></video>
+      <canvas id="snapshot" hidden></canvas>
     </div>
-    <div id="auth-section">
-      <input type="text" id="username-input" placeholder="Enter your username">
-      <button id="enter-btn">Enter</button>
-    </div>
-    <div id="room-section" style="display: none;">
-      <button id="create-room-btn">Create Room</button>
-      <input type="text" id="room-id-input" placeholder="Enter Room ID">
-      <button id="join-room-btn">Join Room</button>
-    </div>
-    <div id="chat-section" style="display: none;">
-      <div id="room-info"></div>
-      <div class="chat-container">
-        <div id="participants" class="participants-list"></div>
-        <div id="chat-box" class="chat-box"></div>
-      </div>
-      <div class="chat-input">
-        <input type="text" id="message-input" placeholder="Type your message">
-        <button id="send-btn">Send</button>
-      </div>
-    </div>
+    <div id="result">Verifying...</div>
+    <div id="animation"></div>
   </div>
+  <script src="app.js"></script>
 </body>
 </html>
