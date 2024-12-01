@@ -16,7 +16,23 @@
     </div>
     <button id="capture-button">Verify Access</button>
     <div id="result"></div>
-    <div id="animation"></div>
+    <div id="animation">
+      <!-- Gate Animation -->
+      <div id="gate-container">
+        <div class="gate" id="left-gate"></div>
+        <div class="gate" id="right-gate"></div>
+      </div>
+      <p id="access-message" class="success-message">Access Granted!</p>
+      
+      <!-- Police Animation -->
+      <div id="police-container">
+        <div class="police-officer">
+          <div class="hat"></div>
+          <div class="badge"></div>
+        </div>
+        <p id="warning-message" class="error-message">Access Denied! Please try again.</p>
+      </div>
+    </div>
   </div>
   <script src="app.js"></script>
 </body>
