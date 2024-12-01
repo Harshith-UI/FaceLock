@@ -1,57 +1,60 @@
-/* Gate animation */
-.gate {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 20px auto;
-  width: 300px;
-  height: 200px;
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+#instructions {
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+#camera-container {
   position: relative;
 }
 
-.gate-left,
-.gate-right {
-  width: 140px;
-  height: 200px;
-  background: #333;
-  border: 2px solid #444;
+video {
+  width: 100%;
+  max-width: 400px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
   border-radius: 5px;
+  cursor: pointer;
 }
 
-.gate-left.open-left {
-  animation: openLeft 2s forwards;
+button:hover {
+  background-color: #0056b3;
 }
 
-.gate-right.open-right {
-  animation: openRight 2s forwards;
+#result {
+  font-size: 1.2rem;
+  margin-top: 20px;
 }
 
-@keyframes openLeft {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-150%);
-  }
-}
-
-@keyframes openRight {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(150%);
-  }
-}
-
-/* Police animation */
-.police {
-  margin: 20px auto;
-  width: 300px;
-  height: auto;
-}
-
-.police img {
-  max-width: 100%;
-  height: auto;
+#animation {
+  margin-top: 20px;
+  font-size: 1.5rem;
 }
