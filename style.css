@@ -1,13 +1,13 @@
 body {
   font-family: Arial, sans-serif;
   text-align: center;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
+  background-color: #f5f5f5;
 }
 
 #app {
-  margin-top: 50px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 #camera-container {
@@ -15,47 +15,35 @@ body {
   margin: 20px auto;
   width: 320px;
   height: 240px;
-  border: 2px solid #ccc;
-  background-color: #eee;
 }
 
-video {
-  position: absolute;
+#camera {
   width: 100%;
-  height: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#capture-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#capture-button:hover {
+  background-color: #0056b3;
 }
 
 #result {
-  margin-top: 20px;
+  margin: 20px 0;
   font-size: 18px;
-  font-weight: bold;
 }
 
 #animation {
-  margin-top: 50px;
-}
-
-/* Gate opening animation */
-@keyframes gate-open {
-  0% { transform: scaleX(0); }
-  100% { transform: scaleX(1); }
-}
-
-.gate-open {
-  width: 100%;
-  height: 10px;
-  background-color: green;
-  animation: gate-open 2s forwards;
-}
-
-/* Warning animation */
-@keyframes warning-flash {
-  0%, 100% { background-color: red; }
-  50% { background-color: yellow; }
-}
-
-.warning-flash {
-  width: 100%;
-  height: 20px;
-  animation: warning-flash 1s infinite;
+  margin-top: 20px;
+  font-size: 24px;
 }
