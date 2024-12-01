@@ -54,11 +54,6 @@ button:hover {
   margin-top: 20px;
 }
 
-#animation {
-  margin-top: 20px;
-  font-size: 1.5rem;
-}
-
 /* Gate Animation Styles */
 #gate-container {
   position: relative;
@@ -103,6 +98,7 @@ button:hover {
   color: #4CAF50;
   opacity: 0;
   transition: opacity 1s ease-in-out;
+  margin-top: 20px;
 }
 
 #gate-container.open + .success-message {
@@ -187,4 +183,29 @@ button:hover {
   font-size: 1.2rem;
   color: #E53935;
   margin-top: 20px;
+}
+
+/* Action Buttons */
+.action-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.retry-button {
+  background-color: #E53935;
+  color: white;
+  border: none;
+}
+
+.retry-button:hover {
+  background-color: #D32F2F;
+}
+
+/* Hide verification container when showing animations */
+#verification-container.hidden {
+  display: none;
 }
