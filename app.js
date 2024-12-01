@@ -1,6 +1,6 @@
 const video = document.getElementById("camera");
 const canvas = document.getElementById("snapshot");
-const verifyButton = document.getElementById("capture-button");
+const captureButton = document.getElementById("capture-button");
 const resultDiv = document.getElementById("result");
 const animationDiv = document.getElementById("animation");
 
@@ -16,7 +16,7 @@ navigator.mediaDevices
   });
 
 // Capture the image and verify
-verifyButton.addEventListener("click", async () => {
+captureButton.addEventListener("click", async () => {
   resultDiv.textContent = "Verifying...";
   animationDiv.innerHTML = ""; // Clear animations
 
@@ -69,23 +69,8 @@ function handleResult(data) {
 // Play animations based on result
 function playAnimation(type) {
   if (type === "granted") {
-    animationDiv.innerHTML = `
-      <div class="gate">
-        <div class="gate-left"></div>
-        <div class="gate-right"></div>
-      </div>
-      <p>🚪 Gate Opening... Welcome!</p>
-    `;
-    document.querySelector(".gate-left").classList.add("open-left");
-    document.querySelector(".gate-right").classList.add("open-right");
+    animationDiv.textContent = "🚪 Gate Opening... Welcome!";
   } else if (type === "denied") {
-    animationDiv.innerHTML = `
-      <div class="police">
-        <img src="police-car.gif" alt="Police Car">
-      </div>
-      <p>🚔 Police Warning! Access Denied!</p>
-    `;
-    const siren = new Audio("siren.mp3"); // Add a siren sound
-    siren.play();
+    animationDiv.textContent = "🚔 Police Warning! Access Denied!";
   }
 }
