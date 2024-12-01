@@ -3,6 +3,8 @@ const canvas = document.getElementById("snapshot");
 const captureButton = document.getElementById("capture-button");
 const resultDiv = document.getElementById("result");
 const animationDiv = document.getElementById("animation");
+const gateContainer = document.getElementById("gate-container");
+const policeContainer = document.getElementById("police-container");
 
 // Start the camera
 navigator.mediaDevices
@@ -18,17 +20,19 @@ navigator.mediaDevices
 // Capture the image and verify
 captureButton.addEventListener("click", async () => {
   resultDiv.textContent = "Verifying...";
-  animationDiv.innerHTML = ""; // Clear animations
-
+  // Hide both animations initially
+  gateContainer.style.display = "none";
+  policeContainer.style.display = "none";
+  
   // Draw the video frame on the canvas
   const context = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+  
   // Convert the canvas image to base64
   const imageData = canvas.toDataURL("image/jpeg").split(",")[1];
-
+  
   // Call the backend API
   try {
     const response = await fetch(
@@ -44,7 +48,6 @@ captureButton.addEventListener("click", async () => {
         }),
       }
     );
-
     const data = await response.json();
     handleResult(data);
   } catch (error) {
@@ -58,19 +61,26 @@ function handleResult(data) {
   if (data.access === "granted") {
     resultDiv.textContent = "Access Granted!";
     resultDiv.style.color = "green";
-    playAnimation("granted"); // Show gate opening animation
+    playAnimation("granted");
   } else {
     resultDiv.textContent = "Access Denied!";
     resultDiv.style.color = "red";
-    playAnimation("denied"); // Show police warning animation
+    playAnimation("denied");
   }
 }
 
 // Play animations based on result
 function playAnimation(type) {
   if (type === "granted") {
-    animationDiv.textContent = "🚪 Gate Opening... Welcome!";
+    // Show gate animation
+    gateContainer.style.display = "block";
+    policeContainer.style.display = "none";
+    setTimeout(() => {
+      gateContainer.classList.add("open");
+    }, 100);
   } else if (type === "denied") {
-    animationDiv.textContent = "🚔 Police Warning! Access Denied!";
+    // Show police animation
+    gateContainer.style.display = "none";
+    policeContainer.style.display = "block";
   }
 }
