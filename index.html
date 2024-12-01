@@ -8,36 +8,15 @@
 </head>
 <body>
   <div id="app">
-    <div id="verification-container">
-      <h1>Building Entry Verification</h1>
-      <p id="instructions">Please look at the camera and click the button to verify access.</p>
-      <div id="camera-container">
-        <video id="camera" autoplay></video>
-        <canvas id="snapshot" hidden></canvas>
-      </div>
-      <button id="capture-button">Verify Access</button>
-      <div id="result"></div>
+    <h1>Building Entry Verification</h1>
+    <p id="instructions">Please look at the camera and click the button to verify access.</p>
+    <div id="camera-container">
+      <video id="camera" autoplay></video>
+      <canvas id="snapshot" hidden></canvas>
     </div>
-
-    <div id="animation">
-      <!-- Gate Animation -->
-      <div id="gate-container">
-        <div class="gate" id="left-gate"></div>
-        <div class="gate" id="right-gate"></div>
-        <p id="access-message" class="success-message">Access Granted!</p>
-        <button class="action-button retry-button">Try Another Verification</button>
-      </div>
-      
-      <!-- Police Animation -->
-      <div id="police-container">
-        <div class="police-officer">
-          <div class="hat"></div>
-          <div class="badge"></div>
-        </div>
-        <p id="warning-message" class="error-message">Access Denied! Please try again.</p>
-        <button class="action-button retry-button">Try Again</button>
-      </div>
-    </div>
+    <button id="capture-button">Verify Access</button>
+    <div id="result"></div>
+    <div id="animation"></div>
   </div>
   <script src="app.js"></script>
 </body>
