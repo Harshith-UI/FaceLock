@@ -29,6 +29,11 @@ verifyButton.addEventListener("click", async () => {
   // Convert the canvas image to base64
   const imageData = canvas.toDataURL("image/jpeg").split(",")[1];
 
+  // Generate a unique filename (timestamp + random string)
+  const timestamp = Date.now();
+  const random = Math.random().toString(36).substr(2, 8);
+  const filename = `captured_image_${timestamp}_${random}.jpeg`;
+
   // Call the backend API
   try {
     const response = await fetch(
@@ -39,7 +44,7 @@ verifyButton.addEventListener("click", async () => {
         body: JSON.stringify({
           bucket: "smart-attendance-upload",
           folder: "uploads",
-          filename: "captured_image.jpeg",
+          filename: filename, // Now unique!
           image: imageData, // Use "image" as expected by the Lambda
         }),
       }
