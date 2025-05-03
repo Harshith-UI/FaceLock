@@ -36,25 +36,50 @@ verifyButton.addEventListener("click", async () => {
   
   // Call the backend API
   try {
+    console.log("Sending request to backend...");
+    const requestBody = {
+      bucket: "smart-attendance-upload",
+      folder: "uploads",
+      filename: filename,
+      image: imageData,
+    };
+    console.log("Request parameters:", { 
+      bucket: requestBody.bucket,
+      folder: requestBody.folder,
+      filename: requestBody.filename,
+      imageSize: requestBody.image ? requestBody.image.length : 0
+    });
+    
     const response = await fetch(
       "https://mja1tyi5z7.execute-api.us-east-1.amazonaws.com/prod/recognize-face",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          bucket: "smart-attendance-upload",
-          folder: "uploads",
-          filename: filename, // Now unique!
-          image: imageData, // Use "image" as expected by the Lambda
-        }),
+        body: JSON.stringify(requestBody),
       }
     );
+    
+    console.log("Response status:", response.status);
+    console.log("Response headers:", Object.fromEntries([...response.headers]));
     
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     
-    const data = await response.json();
+    const responseText = await response.text();
+    console.log("Raw response:", responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+      console.log("Parsed response data:", data);
+    } catch (parseError) {
+      console.error("Failed to parse response as JSON:", parseError);
+      resultDiv.textContent = "Error: Invalid response format";
+      resultDiv.style.color = "red";
+      return;
+    }
+    
     handleResult(data);
   } catch (error) {
     console.error("Error during verification:", error);
@@ -66,6 +91,8 @@ verifyButton.addEventListener("click", async () => {
 // Handle the result
 function handleResult(data) {
   try {
+    console.log("Handling result:", data);
+    
     // Check if data exists and has the expected structure
     if (!data) {
       throw new Error('Empty response received');
@@ -73,12 +100,19 @@ function handleResult(data) {
     
     let result;
     
+    // Log the type of data and its properties
+    console.log("Response type:", typeof data);
+    console.log("Response has body property:", data.hasOwnProperty('body'));
+    
     // Handle different response structures
-    if (typeof data === 'object' && data.body) {
+    if (typeof data === 'object' && data.hasOwnProperty('body')) {
+      console.log("Body type:", typeof data.body);
+      
       // If data.body is a string (Lambda proxy integration format)
       if (typeof data.body === 'string') {
         try {
           result = JSON.parse(data.body);
+          console.log("Parsed body:", result);
         } catch (parseError) {
           console.error("Error parsing response body:", parseError);
           throw new Error('Invalid JSON in response body');
@@ -86,11 +120,17 @@ function handleResult(data) {
       } else {
         // If body is already an object
         result = data.body;
+        console.log("Body is already an object:", result);
       }
     } else {
       // If the response is already the result object
       result = data;
+      console.log("Using data as result:", result);
     }
+    
+    // Log the access property
+    console.log("Result has access property:", result.hasOwnProperty('access'));
+    console.log("Access value:", result.access);
     
     // Now process the result
     if (result.access === "granted") {
@@ -105,8 +145,18 @@ function handleResult(data) {
       resultDiv.textContent = "Error: " + result.error;
       resultDiv.style.color = "red";
     } else {
+      // Display the exact response for debugging
       resultDiv.textContent = "Unknown response from server";
       resultDiv.style.color = "orange";
+      console.log("Full unknown response:", JSON.stringify(result, null, 2));
+      
+      // Check specific properties that might be present
+      if (result.statusCode) {
+        console.log("Status code:", result.statusCode);
+      }
+      if (result.message) {
+        console.log("Message:", result.message);
+      }
     }
   } catch (error) {
     console.error("Error parsing backend response:", error);
