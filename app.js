@@ -19,21 +19,21 @@ navigator.mediaDevices
 verifyButton.addEventListener("click", async () => {
   resultDiv.textContent = "Verifying...";
   animationDiv.innerHTML = ""; // Clear animations
-
+  
   // Draw the video frame on the canvas
   const context = canvas.getContext("2d");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
   context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+  
   // Convert the canvas image to base64
   const imageData = canvas.toDataURL("image/jpeg").split(",")[1];
-
+  
   // Generate a unique filename (timestamp + random string)
   const timestamp = Date.now();
   const random = Math.random().toString(36).substr(2, 8);
   const filename = `captured_image_${timestamp}_${random}.jpeg`;
-
+  
   // Call the backend API
   try {
     const response = await fetch(
@@ -49,32 +49,69 @@ verifyButton.addEventListener("click", async () => {
         }),
       }
     );
-
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
     const data = await response.json();
     handleResult(data);
   } catch (error) {
     console.error("Error during verification:", error);
-    resultDiv.textContent = "Error during verification.";
+    resultDiv.textContent = "Error during verification: " + error.message;
+    resultDiv.style.color = "red";
   }
 });
 
 // Handle the result
 function handleResult(data) {
   try {
-    // Parse the backend response's "body" field
-    const result = JSON.parse(data.body); // Parse the "body" string
+    // Check if data exists and has the expected structure
+    if (!data) {
+      throw new Error('Empty response received');
+    }
+    
+    let result;
+    
+    // Handle different response structures
+    if (typeof data === 'object' && data.body) {
+      // If data.body is a string (Lambda proxy integration format)
+      if (typeof data.body === 'string') {
+        try {
+          result = JSON.parse(data.body);
+        } catch (parseError) {
+          console.error("Error parsing response body:", parseError);
+          throw new Error('Invalid JSON in response body');
+        }
+      } else {
+        // If body is already an object
+        result = data.body;
+      }
+    } else {
+      // If the response is already the result object
+      result = data;
+    }
+    
+    // Now process the result
     if (result.access === "granted") {
       resultDiv.textContent = "Access Granted!";
       resultDiv.style.color = "green";
       playAnimation("granted"); // Show gate opening animation
-    } else {
+    } else if (result.access === "denied") {
       resultDiv.textContent = "Access Denied!";
       resultDiv.style.color = "red";
       playAnimation("denied"); // Show police warning animation
+    } else if (result.error) {
+      resultDiv.textContent = "Error: " + result.error;
+      resultDiv.style.color = "red";
+    } else {
+      resultDiv.textContent = "Unknown response from server";
+      resultDiv.style.color = "orange";
     }
   } catch (error) {
     console.error("Error parsing backend response:", error);
-    resultDiv.textContent = "Error during verification.";
+    resultDiv.textContent = "Error during verification: " + error.message;
+    resultDiv.style.color = "red";
   }
 }
 
